@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.mycatalog"
-        minSdk = 24
+        minSdk = 28
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -26,8 +26,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 }
 
