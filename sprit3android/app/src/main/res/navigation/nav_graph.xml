@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/catalogFragment">
+
+    <fragment
+        android:id="@+id/catalogFragment"
+        android:name="com.example.mycatalog.CatalogFragment"
+        android:label="Catálogo"
+        tools:layout="@layout/fragment_catalog" />
+
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.example.mycatalog.AboutFragment"
+        android:label="About"
+        tools:layout="@layout/fragment_about" />
+</navigation>
