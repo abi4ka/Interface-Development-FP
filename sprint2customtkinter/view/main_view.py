@@ -66,11 +66,26 @@ class MainView(ctk.CTk):
             btn.pack(fill="x", pady=2, padx=5)
 
     def show_preview(self, user):
-        self.label_preview.configure(text=f"{user['name']} - {user['age']} años - {user['gender']}")
+        for widget in self.frame_preview.winfo_children():
+            widget.destroy()
+
         if user.get("avatar_img"):
-            self.label_avatar.configure(image=user["avatar_img"], text="")
+            self.label_avatar = ctk.CTkLabel(self.frame_preview, image=user["avatar_img"], text="")
         else:
-            self.label_avatar.configure(image=None, text="Sin avatar")
+            self.label_avatar = ctk.CTkLabel(self.frame_preview, text="Sin avatar")
+        self.label_avatar.pack(pady=10)
+
+        self.label_nombre = ctk.CTkLabel(self.frame_preview, text=f"Nombre: {user['name']}", font=ctk.CTkFont(size=14),
+                                         anchor="w", justify="left")
+        self.label_nombre.pack(pady=5, fill="x", padx=10)
+
+        self.label_edad = ctk.CTkLabel(self.frame_preview, text=f"Edad: {user['age']} años", font=ctk.CTkFont(size=14),
+                                       anchor="w", justify="left")
+        self.label_edad.pack(pady=5, fill="x", padx=10)
+
+        self.label_genero = ctk.CTkLabel(self.frame_preview, text=f"Género: {user['gender']}",
+                                         font=ctk.CTkFont(size=14), anchor="w", justify="left")
+        self.label_genero.pack(pady=5, fill="x", padx=10)
 
 
 class AddUserWindow(ctk.CTkToplevel):
@@ -114,7 +129,8 @@ class AddUserWindow(ctk.CTkToplevel):
             ctk.CTkImage(Image.open(os.path.join(res_path, "avatar3.png")), size=(60, 60))
         ]
 
-        self.selected_avatar = None
+        self.selected_avatar_index = 0
+        self.avatar_buttons = []
         for a, img in enumerate(self.avatars):
             btn = ctk.CTkButton(
                 self.avatar_frame,
@@ -122,22 +138,28 @@ class AddUserWindow(ctk.CTkToplevel):
                 text="",
                 width=70,
                 height=70,
+                fg_color=("gray75", "gray25") if a != self.selected_avatar_index else ("blue", "blue"),
                 command=lambda i=a: self.select_avatar(i)
             )
             btn.grid(row=0, column=a, padx=5)
+            self.avatar_buttons.append(btn)
+
+        self.selected_avatar = self.avatars[self.selected_avatar_index]
 
         ctk.CTkButton(self, text="Confirmar", command=self.confirm).pack(pady=20)
 
     def select_avatar(self, index):
+        self.selected_avatar_index = index
         self.selected_avatar = self.avatars[index]
+        for i, btn in enumerate(self.avatar_buttons):
+            btn.configure(fg_color=("blue", "blue") if i == index else ("gray75", "gray25"))
 
     def confirm(self):
         name = self.entry_name.get().strip()
+        if not name:
+            return
         age = int(float(self.scale_age.get()))
         gender = self.gender_var.get()
         avatar = self.selected_avatar
-        if not name:
-            ctk.CTkMessagebox(title="Error", message="Introduce un nombre.")
-            return
         self.controller.add_user(name, age, gender, avatar)
         self.destroy()
