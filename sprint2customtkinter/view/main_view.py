@@ -1,33 +1,35 @@
 
 import tkinter as tk
+from doctest import master
+
 import customtkinter as ctk
 
 
 from view.add_user_window import AddUserWindow
 
 
-class MainView(ctk.CTk):
-    def __init__(self, controller):
-        super().__init__()
-        ctk.set_appearance_mode("Light")
-        ctk.set_default_color_theme("blue")
+class MainView(ctk.CTkFrame):
+    def __init__(self, master, controller):
+        super().__init__(master)
         self.controller = controller
-        self.title("Ejercicio 14 - Registro de Usuarios (MVC)")
-        self.geometry("800x500")
-        self.minsize(700, 400)
+
+        self.pack(fill="both", expand=True)
+
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
-        menubar = tk.Menu(self)
+        menubar = tk.Menu(master)
         menu_archivo = tk.Menu(menubar, tearoff=0)
         menu_archivo.add_command(label="Guardar", command=self.controller.guardar_lista)
         menu_archivo.add_command(label="Cargar", command=self.controller.cargar_lista)
         menu_archivo.add_command(label="Salir", command=self.controller_exit)
         menubar.add_cascade(label="Archivo", menu=menu_archivo)
+
         menu_ayuda = tk.Menu(menubar, tearoff=0)
         menu_ayuda.add_command(label="Acerca de", command=lambda: None)
         menubar.add_cascade(label="Ayuda", menu=menu_ayuda)
-        self.config(menu=menubar)
+
+        master.configure(menu=menubar)
 
         self.filter_frame = ctk.CTkFrame(self)
         self.filter_frame.grid(row=1, column=0, columnspan=2, sticky="ew", padx=10, pady=5)

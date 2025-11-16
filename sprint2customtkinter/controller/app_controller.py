@@ -4,10 +4,10 @@ import threading
 import time
 
 class AppController:
-    def __init__(self):
-        self.selected_index = None
+    def __init__(self, root):
+        self.root = root
         self.model = UserModel()
-        self.view = MainView(self)
+        self.view = MainView(root, self)
         self.view.update_user_list(self.model.get_users())
         self.autosave_running = False
         self.autosave_thread = None
