@@ -1,82 +1,117 @@
-from model.user_model import UserModel
+from model.user_model import GestorUsuarios, Usuario
 from view.main_view import MainView
+from view.add_user_window import AddUserWindow
 import threading
 import time
-from view.add_user_window import AddUserWindow
 
 
 class AppController:
     def __init__(self, root):
         self.root = root
-        self.model = UserModel()
+        self.model = GestorUsuarios()
         self.selected_user = None
         self.selected_index = None
         self.autosave_running = False
         self.autosave_thread = None
 
+        # Инициализация view
         self.view = MainView(root, self)
         self.view.btn_anadir.configure(command=self.open_add_modal)
         self.view.btn_eliminar.configure(command=self.delete_selected)
         self.view.autosave_button.configure(command=self.toggle_autosave)
 
-        # Загрузка списка
+        # Загрузка списка пользователей
+        self.model.cargar_csv()
         self.refresh_user_list()
 
-    # Вспомогательные методы
+    # -----------------------
+    # Методы для работы с пользователями
+    # -----------------------
     def refresh_user_list(self):
-        users = self.model.get_users()
-        self.view.update_user_list(users, self.select_user)
+        users = self.model.listar()
+        # Для отображения нужно создать список словарей с text и avatar_img
+        users_data = [
+            {
+                "nombre": u.nombre,
+                "edad": u.edad,
+                "genero": u.genero,
+                "avatar_img": u.avatar_img,
+                "text": f"{u.nombre} ({u.genero}, {u.edad} años)"
+            }
+            for u in users
+        ]
+        self.view.update_user_list(users_data, self.select_user)
         self.view.clear_preview()
         self.view.set_delete_enabled(False)
         self.selected_user = None
         self.selected_index = None
 
-    def select_user(self, user):
+    def select_user(self, user_data):
+        # Находим объект Usuario по имени и возрасту
         try:
-            self.selected_index = self.model.get_users().index(user)
-        except ValueError:
+            self.selected_index = next(
+                i for i, u in enumerate(self.model.listar())
+                if u.nombre == user_data["nombre"] and u.edad == user_data["edad"]
+            )
+            self.selected_user = self.model.listar()[self.selected_index]
+        except StopIteration:
             self.selected_index = None
-        self.selected_user = user
-        self.view.show_preview(user)
+            self.selected_user = None
+
+        self.view.show_preview(user_data)
         self.view.set_delete_enabled(self.selected_index is not None)
 
     def open_add_modal(self):
         AddUserWindow(self.root, self)
 
-    def add_user(self, name, age, gender, avatar_img, avatar_name):
-        new_user = {
-            "name": name,
-            "age": age,
-            "gender": gender,
-            "avatar_img": avatar_img,
-            "avatar_name": avatar_name,
-            "text": f"{name} ({gender}, {age} años)"
-        }
-        self.model.add_user(new_user)
-        self.refresh_user_list()
+    def add_user(self, nombre, edad, genero, avatar_img, avatar_name):
+        try:
+            usuario = Usuario(nombre=nombre, edad=edad, genero=genero, avatar=avatar_name)
+            usuario.avatar_img = avatar_img
+            self.model.añadir(usuario)
+            self.refresh_user_list()
+        except ValueError as e:
+            self.view.show_message(str(e))
 
     def delete_selected(self):
         if self.selected_index is not None:
-            self.model.delete_user_by_index(self.selected_index)
-            self.refresh_user_list()
+            try:
+                self.model.eliminar(self.selected_index)
+                self.refresh_user_list()
+            except IndexError:
+                self.view.show_message("Error al eliminar usuario")
 
     def filtrar(self):
-        text = self.view.entry_buscar.get().strip()
-        gender = self.view.option_genero.get()
-        filtered = self.model.filter_users(text, gender)
-        self.view.update_user_list(filtered, self.select_user)
+        texto = self.view.entry_buscar.get().strip()
+        genero = self.view.option_genero.get()
+        usuarios_filtrados = self.model.filtrar(texto, genero)
+
+        users_data = [
+            {
+                "nombre": u.nombre,
+                "edad": u.edad,
+                "genero": u.genero,
+                "avatar_img": u.avatar_img,
+                "text": f"{u.nombre} ({u.genero}, {u.edad} años)"
+            }
+            for u in usuarios_filtrados
+        ]
+
+        self.view.update_user_list(users_data, self.select_user)
         self.view.clear_preview()
         self.view.set_delete_enabled(False)
         self.selected_user = None
         self.selected_index = None
 
+    # -----------------------
     # Меню
+    # -----------------------
     def menu_guardar(self):
-        self.model.save_users()
+        self.model.guardar_csv()
         self.view.show_message("Lista guardada correctamente.")
 
     def menu_cargar(self):
-        self.model.load_users()
+        self.model.cargar_csv()
         self.refresh_user_list()
         self.view.show_message("Lista cargada correctamente.")
 
@@ -87,7 +122,9 @@ class AppController:
     def menu_acerca_de(self):
         self.view.show_message("Registro de Usuarios v1.0")
 
+    # -----------------------
     # Авто-сохранение
+    # -----------------------
     def toggle_autosave(self):
         if not self.autosave_running:
             self.autosave_running = True
@@ -101,7 +138,7 @@ class AppController:
     def autosave_loop(self):
         while self.autosave_running:
             time.sleep(10)
-            self.model.save_users()
+            self.model.guardar_csv()
             self.root.after(0, lambda: self.view.show_message("Auto-guardado"))
 
     def stop_autosave(self):

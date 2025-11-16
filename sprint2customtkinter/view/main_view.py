@@ -90,18 +90,34 @@ class MainView(ctk.CTkFrame):
     def show_preview(self, user):
         for w in self.frame_preview.winfo_children():
             w.destroy()
-        self.label_preview = ctk.CTkLabel(self.frame_preview, text="Previsualización", font=ctk.CTkFont(size=16, weight="bold"))
+        self.label_preview = ctk.CTkLabel(
+            self.frame_preview, text="Previsualización",
+            font=ctk.CTkFont(size=16, weight="bold")
+        )
         self.label_preview.pack(pady=10)
 
+        # Аватар
         if user.get("avatar_img"):
             label_avatar = ctk.CTkLabel(self.frame_preview, image=user["avatar_img"], text="")
         else:
             label_avatar = ctk.CTkLabel(self.frame_preview, text="Sin avatar")
         label_avatar.pack(pady=10)
 
-        for key, label in [("name", "Nombre"), ("age", "Edad"), ("gender", "Género")]:
-            text = f"{label}: {user[key]}" + (" años" if key=="age" else "")
-            ctk.CTkLabel(self.frame_preview, text=text, font=ctk.CTkFont(size=14), anchor="w", justify="left").pack(pady=5, fill="x", padx=10)
+        # Поля
+        mapping = [("nombre", "Nombre"), ("edad", "Edad"), ("genero", "Género")]
+        for key, label in mapping:
+            value = user.get(key, "")
+            if key == "edad":
+                text = f"{label}: {value} años"
+            else:
+                text = f"{label}: {value}"
+            ctk.CTkLabel(
+                self.frame_preview,
+                text=text,
+                font=ctk.CTkFont(size=14),
+                anchor="w",
+                justify="left"
+            ).pack(pady=5, fill="x", padx=10)
 
     def clear_preview(self):
         for w in self.frame_preview.winfo_children():
