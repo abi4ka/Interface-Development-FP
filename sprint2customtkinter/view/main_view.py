@@ -89,22 +89,21 @@ class MainView(ctk.CTkFrame):
             fg_color="green" if enabled else "red"
         )
 
-    def update_user_list(self, usuarios, on_select_callback, on_edit_callback):
-        self.frame_list.configure(label_text=f"Lista de Usuarios ({len(usuarios)})")
+    def update_user_list(self, data_list, on_select_callback, on_edit_callback):
+        self.frame_list.configure(label_text=f"Lista de Usuarios ({len(data_list)})")
         for w in self.frame_list.winfo_children():
             w.destroy()
 
-        for u in usuarios:
-            text = f"{u.nombre} ({u.genero}, {u.edad} años)"
+        for item in data_list:
             btn = ctk.CTkButton(
                 self.frame_list,
-                text=text,
-                command=lambda u=u: on_select_callback(u)
+                text=item["text"],
+                command=lambda u=item["user"]: on_select_callback(u)
             )
             btn.pack(fill="x", pady=2, padx=5)
-            btn.bind("<Double-1>", lambda e, u=u: on_edit_callback(u))
+            btn.bind("<Double-1>", lambda e, u=item["user"]: on_edit_callback(u))
 
-    def show_preview(self, usuario):
+    def show_preview(self, data: dict):
         for w in self.frame_preview.winfo_children():
             w.destroy()
 
@@ -114,28 +113,21 @@ class MainView(ctk.CTkFrame):
             font=ctk.CTkFont(size=16, weight="bold")
         ).pack(pady=10)
 
-        if usuario.avatar_img:
-            ctk.CTkLabel(self.frame_preview, image=usuario.avatar_img, text="").pack(pady=10)
+        if data["avatar_img"]:
+            ctk.CTkLabel(self.frame_preview, image=data["avatar_img"], text="").pack(pady=10)
         else:
             ctk.CTkLabel(self.frame_preview, text="Sin avatar").pack(pady=10)
 
-        ctk.CTkLabel(
-            self.frame_preview,
-            text=f"Nombre: {usuario.nombre}",
-            font=ctk.CTkFont(size=14)
-        ).pack(pady=5, fill="x", padx=10)
-
-        ctk.CTkLabel(
-            self.frame_preview,
-            text=f"Edad: {usuario.edad} años",
-            font=ctk.CTkFont(size=14)
-        ).pack(pady=5, fill="x", padx=10)
-
-        ctk.CTkLabel(
-            self.frame_preview,
-            text=f"Género: {usuario.genero}",
-            font=ctk.CTkFont(size=14)
-        ).pack(pady=5, fill="x", padx=10)
+        for label in (
+                f"Nombre: {data['nombre']}",
+                f"Edad: {data['edad']} años",
+                f"Género: {data['genero']}",
+        ):
+            ctk.CTkLabel(
+                self.frame_preview,
+                text=label,
+                font=ctk.CTkFont(size=14)
+            ).pack(pady=5, fill="x", padx=10)
 
     def clear_preview(self):
         for w in self.frame_preview.winfo_children():

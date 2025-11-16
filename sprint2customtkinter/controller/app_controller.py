@@ -25,11 +25,16 @@ class AppController:
 
     def refresh_user_list(self):
         usuarios = self.model.listar()
-        self.view.update_user_list(usuarios, self.select_user, self.open_edit_modal)
-        self.view.clear_preview()
-        self.view.set_delete_enabled(False)
-        self.selected_user = None
-        self.selected_index = None
+
+        data = [
+            {
+                "text": f"{u.nombre} ({u.genero}, {u.edad} años)",
+                "user": u
+            }
+            for u in usuarios
+        ]
+
+        self.view.update_user_list(data, self.select_user, self.open_edit_modal)
 
     def select_user(self, usuario: Usuario):
         try:
@@ -39,7 +44,14 @@ class AppController:
             self.selected_index = None
             self.selected_user = None
 
-        self.view.show_preview(usuario)
+        data = {
+            "nombre": usuario.nombre,
+            "edad": usuario.edad,
+            "genero": usuario.genero,
+            "avatar_img": usuario.avatar_img
+        }
+
+        self.view.show_preview(data)
         self.view.set_delete_enabled(self.selected_index is not None)
 
     def update_user(self, usuario: Usuario, nombre, edad, genero, avatar_img, avatar_name):
@@ -76,7 +88,15 @@ class AppController:
         genero = self.view.option_genero.get()
         usuarios_filtrados = self.model.filtrar(texto, genero)
 
-        self.view.update_user_list(usuarios_filtrados, self.select_user, self.open_edit_modal)
+        data = [
+            {
+                "text": f"{u.nombre} ({u.genero}, {u.edad} años)",
+                "user": u
+            }
+            for u in usuarios_filtrados
+        ]
+
+        self.view.update_user_list(data, self.select_user, self.open_edit_modal)
         self.view.clear_preview()
         self.view.set_delete_enabled(False)
         self.selected_user = None
