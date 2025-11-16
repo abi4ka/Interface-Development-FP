@@ -37,7 +37,7 @@ class AddUserWindow(ctk.CTkToplevel):
         self.avatar_frame = ctk.CTkFrame(self)
         self.avatar_frame.pack(pady=5)
 
-        res_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "res")
+        res_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets")
 
         self.avatars = [
             ctk.CTkImage(Image.open(os.path.join(res_path, "avatar1.png")), size=(60, 60)),

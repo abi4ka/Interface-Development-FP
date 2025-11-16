@@ -1,6 +1,6 @@
 import os
 
-AVATAR_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "res")
+AVATAR_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets")
 
 class UserModel:
     def __init__(self):
