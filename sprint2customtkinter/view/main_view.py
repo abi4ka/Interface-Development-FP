@@ -8,11 +8,9 @@ class MainView(ctk.CTkFrame):
         self.controller = controller
         self.pack(fill="both", expand=True)
 
-        # Настройка сетки
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
-        # Меню
         menubar = tk.Menu(master)
         menu_archivo = tk.Menu(menubar, tearoff=0)
         menu_archivo.add_command(label="Guardar", command=lambda: self.controller.menu_guardar())
@@ -25,7 +23,6 @@ class MainView(ctk.CTkFrame):
         menubar.add_cascade(label="Ayuda", menu=menu_ayuda)
         master.configure(menu=menubar)
 
-        # Фильтры и кнопки
         self.filter_frame = ctk.CTkFrame(self)
         self.filter_frame.grid(row=1, column=0, columnspan=2, sticky="ew", padx=10, pady=5)
         self.filter_frame.grid_columnconfigure(5, weight=1)
@@ -51,11 +48,9 @@ class MainView(ctk.CTkFrame):
         self.btn_anadir = ctk.CTkButton(buttons_frame, text="Añadir", width=90)
         self.btn_anadir.pack(side="left", padx=5)
 
-        # Список пользователей
         self.frame_list = ctk.CTkScrollableFrame(self, label_text="Lista de Usuarios (0)", width=250)
         self.frame_list.grid(row=2, column=0, padx=10, pady=10, sticky="ns")
 
-        # Панель превью
         self.frame_preview = ctk.CTkFrame(self)
         self.frame_preview.grid(row=2, column=1, padx=10, pady=10, sticky="nsew")
         self.label_preview = ctk.CTkLabel(self.frame_preview, text="Previsualización", font=ctk.CTkFont(size=16, weight="bold"))
@@ -63,7 +58,6 @@ class MainView(ctk.CTkFrame):
         self.label_avatar = ctk.CTkLabel(self.frame_preview, text="")
         self.label_avatar.pack(pady=10)
 
-        # Нижняя панель
         self.bottom_panel = ctk.CTkFrame(self, height=40)
         self.bottom_panel.grid(row=3, column=0, columnspan=2, sticky="ew")
         self.grid_rowconfigure(3, weight=0)
@@ -71,7 +65,6 @@ class MainView(ctk.CTkFrame):
         self.autosave_button = ctk.CTkButton(self.bottom_panel, text="Auto-guardar: OFF", width=140)
         self.autosave_button.pack(side="left", padx=10, pady=5)
 
-    # Методы для контроллера
     def set_delete_enabled(self, enabled: bool):
         self.btn_eliminar.configure(state="normal" if enabled else "disabled")
 
@@ -97,14 +90,12 @@ class MainView(ctk.CTkFrame):
         )
         self.label_preview.pack(pady=10)
 
-        # Аватар
         if usuario.avatar_img:
             label_avatar = ctk.CTkLabel(self.frame_preview, image=usuario.avatar_img, text="")
         else:
             label_avatar = ctk.CTkLabel(self.frame_preview, text="Sin avatar")
         label_avatar.pack(pady=10)
 
-        # Поля
         ctk.CTkLabel(
             self.frame_preview, text=f"Nombre: {usuario.nombre}",
             font=ctk.CTkFont(size=14), anchor="w", justify="left"
@@ -135,7 +126,6 @@ class MainView(ctk.CTkFrame):
             w.destroy()
 
         for u in usuarios:
-            # Формируем текст для кнопки
             text = f"{u.nombre} ({u.genero}, {u.edad} años)"
             btn = ctk.CTkButton(
                 self.frame_list,
@@ -144,5 +134,4 @@ class MainView(ctk.CTkFrame):
             )
             btn.pack(fill="x", pady=2, padx=5)
 
-            # Двойной клик для редактирования
             btn.bind("<Double-1>", lambda e, u=u: on_edit_callback(u))

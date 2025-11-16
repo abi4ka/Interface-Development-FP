@@ -15,19 +15,14 @@ class AppController:
         self.autosave_running = False
         self.autosave_thread = None
 
-        # Инициализация view
         self.view = MainView(root, self)
         self.view.btn_anadir.configure(command=self.open_add_modal)
         self.view.btn_eliminar.configure(command=self.delete_selected)
         self.view.autosave_button.configure(command=self.toggle_autosave)
 
-        # Загрузка списка пользователей
         self.model.cargar_csv()
         self.refresh_user_list()
 
-    # -----------------------
-    # Методы для работы с пользователями
-    # -----------------------
     def refresh_user_list(self):
         usuarios = self.model.listar()
         self.view.update_user_list(usuarios, self.select_user, self.open_edit_modal)
@@ -49,7 +44,6 @@ class AppController:
 
     def update_user(self, usuario: Usuario, nombre, edad, genero, avatar_img, avatar_name):
         if self.selected_index is not None:
-            # Обновляем объект пользователя
             usuario.nombre = nombre
             usuario.edad = edad
             usuario.genero = genero
@@ -82,16 +76,12 @@ class AppController:
         genero = self.view.option_genero.get()
         usuarios_filtrados = self.model.filtrar(texto, genero)
 
-        # Передаем объекты Usuario напрямую
         self.view.update_user_list(usuarios_filtrados, self.select_user, self.open_edit_modal)
         self.view.clear_preview()
         self.view.set_delete_enabled(False)
         self.selected_user = None
         self.selected_index = None
 
-    # -----------------------
-    # Меню
-    # -----------------------
     def menu_guardar(self):
         self.model.guardar_csv()
         self.view.show_message("Lista guardada correctamente.")
@@ -108,9 +98,6 @@ class AppController:
     def menu_acerca_de(self):
         self.view.show_message("Registro de Usuarios v1.0")
 
-    # -----------------------
-    # Авто-сохранение
-    # -----------------------
     def toggle_autosave(self):
         if not self.autosave_running:
             self.autosave_running = True

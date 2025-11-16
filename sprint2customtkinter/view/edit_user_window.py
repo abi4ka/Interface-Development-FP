@@ -13,13 +13,11 @@ class EditUserWindow(ctk.CTkToplevel):
         self.resizable(False, False)
         self.grab_set()
 
-        # Имя
         ctk.CTkLabel(self, text="Nombre:").pack(pady=(20, 5))
         self.entry_name = ctk.CTkEntry(self, width=250)
         self.entry_name.pack()
         self.entry_name.insert(0, user.nombre)
 
-        # Возраст
         ctk.CTkLabel(self, text="Edad:").pack(pady=(15, 5))
         self.scale_age = ctk.CTkSlider(self, from_=0, to=100, number_of_steps=100)
         self.scale_age.set(user.edad)
@@ -28,7 +26,6 @@ class EditUserWindow(ctk.CTkToplevel):
         self.age_label.pack()
         self.scale_age.configure(command=lambda v: self.age_label.configure(text=f"{int(float(v))} años"))
 
-        # Пол
         ctk.CTkLabel(self, text="Género:").pack(pady=(15, 5))
         self.gender_var = tk.StringVar(value=user.genero)
         gender_frame = ctk.CTkFrame(self)
@@ -37,7 +34,6 @@ class EditUserWindow(ctk.CTkToplevel):
         ctk.CTkRadioButton(gender_frame, text="Femenino", variable=self.gender_var, value="Femenino").pack(side="left", padx=5)
         ctk.CTkRadioButton(gender_frame, text="Otro", variable=self.gender_var, value="Otro").pack(side="left", padx=5)
 
-        # Аватар
         ctk.CTkLabel(self, text="Avatar:").pack(pady=(15, 5))
         self.avatar_frame = ctk.CTkFrame(self)
         self.avatar_frame.pack(pady=5)
@@ -48,7 +44,6 @@ class EditUserWindow(ctk.CTkToplevel):
             for i in range(1, 4)
         ]
 
-        # Получаем имя аватара из user, если есть
         avatar_name = getattr(user, "avatar_name", "avatar1.png")
         self.selected_avatar_index = int(avatar_name[6]) - 1
         self.selected_avatar = self.avatars[self.selected_avatar_index]
@@ -67,7 +62,6 @@ class EditUserWindow(ctk.CTkToplevel):
             btn.grid(row=0, column=i, padx=5)
             self.avatar_buttons.append(btn)
 
-        # Кнопка подтверждения
         ctk.CTkButton(self, text="Confirmar", command=self.confirm).pack(pady=20)
 
     def select_avatar(self, index):

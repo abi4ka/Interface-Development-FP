@@ -4,18 +4,15 @@ from PIL import Image
 import customtkinter as ctk
 
 AVATAR_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets")
-CSV_FILE = "usuarios.csv"  # теперь имя соответствует заданию
+CSV_FILE = "usuarios.csv"
 
-# -------------------------------
-# Класс пользователя
-# -------------------------------
 class Usuario:
     def __init__(self, nombre: str, edad: int, genero: str, avatar: str):
         self.nombre = nombre.strip()
         self.edad = edad
         self.genero = genero
-        self.avatar = avatar  # имя файла в assets
-        self.avatar_img = None  # CTkImage, загружается отдельно
+        self.avatar = avatar
+        self.avatar_img = None
 
     def cargar_avatar(self, size=(60, 60)):
         path = os.path.join(AVATAR_PATH, self.avatar)
@@ -43,10 +40,6 @@ class Usuario:
             ctk.CTkLabel(self.frame_preview, text=text, font=ctk.CTkFont(size=14), anchor="w", justify="left").pack(
                 pady=5, fill="x", padx=10)
 
-
-# -------------------------------
-# Класс управления пользователями
-# -------------------------------
 class GestorUsuarios:
     def __init__(self):
         self._usuarios = []
@@ -55,7 +48,6 @@ class GestorUsuarios:
         return list(self._usuarios)
 
     def añadir(self, usuario: Usuario):
-        # минимальная валидация
         if not usuario.nombre:
             raise ValueError("El nombre no puede estar vacío")
         if not (0 <= usuario.edad <= 100):
@@ -95,7 +87,7 @@ class GestorUsuarios:
                 reader = csv.DictReader(f)
                 for row in reader:
                     if not {"nombre","edad","genero","avatar"} <= row.keys():
-                        continue  # fila corrupta
+                        continue
                     try:
                         usuario = Usuario(
                             nombre=row["nombre"],
@@ -106,7 +98,7 @@ class GestorUsuarios:
                         usuario.cargar_avatar()
                         self._usuarios.append(usuario)
                     except Exception:
-                        continue  # fila inválida
+                        continue
         except FileNotFoundError:
             pass
 
