@@ -1,4 +1,5 @@
 from model.user_model import GestorUsuarios, Usuario
+from view.edit_user_window import EditUserWindow
 from view.main_view import MainView
 from view.add_user_window import AddUserWindow
 import threading
@@ -28,38 +29,33 @@ class AppController:
     # Методы для работы с пользователями
     # -----------------------
     def refresh_user_list(self):
-        users = self.model.listar()
-        # Для отображения нужно создать список словарей с text и avatar_img
-        users_data = [
-            {
-                "nombre": u.nombre,
-                "edad": u.edad,
-                "genero": u.genero,
-                "avatar_img": u.avatar_img,
-                "text": f"{u.nombre} ({u.genero}, {u.edad} años)"
-            }
-            for u in users
-        ]
-        self.view.update_user_list(users_data, self.select_user)
+        usuarios = self.model.listar()
+        self.view.update_user_list(usuarios, self.select_user, self.open_edit_modal)
         self.view.clear_preview()
         self.view.set_delete_enabled(False)
         self.selected_user = None
         self.selected_index = None
 
-    def select_user(self, user_data):
-        # Находим объект Usuario по имени и возрасту
+    def select_user(self, usuario: Usuario):
         try:
-            self.selected_index = next(
-                i for i, u in enumerate(self.model.listar())
-                if u.nombre == user_data["nombre"] and u.edad == user_data["edad"]
-            )
-            self.selected_user = self.model.listar()[self.selected_index]
-        except StopIteration:
+            self.selected_index = self.model.listar().index(usuario)
+            self.selected_user = usuario
+        except ValueError:
             self.selected_index = None
             self.selected_user = None
 
-        self.view.show_preview(user_data)
+        self.view.show_preview(usuario)
         self.view.set_delete_enabled(self.selected_index is not None)
+
+    def update_user(self, usuario: Usuario, nombre, edad, genero, avatar_img, avatar_name):
+        if self.selected_index is not None:
+            # Обновляем объект пользователя
+            usuario.nombre = nombre
+            usuario.edad = edad
+            usuario.genero = genero
+            usuario.avatar = avatar_name
+            usuario.avatar_img = avatar_img
+            self.refresh_user_list()
 
     def open_add_modal(self):
         AddUserWindow(self.root, self)
@@ -86,18 +82,8 @@ class AppController:
         genero = self.view.option_genero.get()
         usuarios_filtrados = self.model.filtrar(texto, genero)
 
-        users_data = [
-            {
-                "nombre": u.nombre,
-                "edad": u.edad,
-                "genero": u.genero,
-                "avatar_img": u.avatar_img,
-                "text": f"{u.nombre} ({u.genero}, {u.edad} años)"
-            }
-            for u in usuarios_filtrados
-        ]
-
-        self.view.update_user_list(users_data, self.select_user)
+        # Передаем объекты Usuario напрямую
+        self.view.update_user_list(usuarios_filtrados, self.select_user, self.open_edit_modal)
         self.view.clear_preview()
         self.view.set_delete_enabled(False)
         self.selected_user = None
@@ -143,3 +129,6 @@ class AppController:
 
     def stop_autosave(self):
         self.autosave_running = False
+
+    def open_edit_modal(self, user):
+        EditUserWindow(self.root, self, user)

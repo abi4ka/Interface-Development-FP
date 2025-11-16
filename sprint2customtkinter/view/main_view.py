@@ -87,9 +87,10 @@ class MainView(ctk.CTkFrame):
             btn = ctk.CTkButton(self.frame_list, text=user["text"], command=lambda u=user: on_select_callback(u))
             btn.pack(fill="x", pady=2, padx=5)
 
-    def show_preview(self, user):
+    def show_preview(self, usuario):
         for w in self.frame_preview.winfo_children():
             w.destroy()
+
         self.label_preview = ctk.CTkLabel(
             self.frame_preview, text="Previsualización",
             font=ctk.CTkFont(size=16, weight="bold")
@@ -97,27 +98,27 @@ class MainView(ctk.CTkFrame):
         self.label_preview.pack(pady=10)
 
         # Аватар
-        if user.get("avatar_img"):
-            label_avatar = ctk.CTkLabel(self.frame_preview, image=user["avatar_img"], text="")
+        if usuario.avatar_img:
+            label_avatar = ctk.CTkLabel(self.frame_preview, image=usuario.avatar_img, text="")
         else:
             label_avatar = ctk.CTkLabel(self.frame_preview, text="Sin avatar")
         label_avatar.pack(pady=10)
 
         # Поля
-        mapping = [("nombre", "Nombre"), ("edad", "Edad"), ("genero", "Género")]
-        for key, label in mapping:
-            value = user.get(key, "")
-            if key == "edad":
-                text = f"{label}: {value} años"
-            else:
-                text = f"{label}: {value}"
-            ctk.CTkLabel(
-                self.frame_preview,
-                text=text,
-                font=ctk.CTkFont(size=14),
-                anchor="w",
-                justify="left"
-            ).pack(pady=5, fill="x", padx=10)
+        ctk.CTkLabel(
+            self.frame_preview, text=f"Nombre: {usuario.nombre}",
+            font=ctk.CTkFont(size=14), anchor="w", justify="left"
+        ).pack(pady=5, fill="x", padx=10)
+
+        ctk.CTkLabel(
+            self.frame_preview, text=f"Edad: {usuario.edad} años",
+            font=ctk.CTkFont(size=14), anchor="w", justify="left"
+        ).pack(pady=5, fill="x", padx=10)
+
+        ctk.CTkLabel(
+            self.frame_preview, text=f"Género: {usuario.genero}",
+            font=ctk.CTkFont(size=14), anchor="w", justify="left"
+        ).pack(pady=5, fill="x", padx=10)
 
     def clear_preview(self):
         for w in self.frame_preview.winfo_children():
@@ -127,3 +128,21 @@ class MainView(ctk.CTkFrame):
 
     def show_message(self, param):
         print(param)
+
+    def update_user_list(self, usuarios, on_select_callback, on_edit_callback):
+        self.frame_list.configure(label_text=f"Lista de Usuarios ({len(usuarios)})")
+        for w in self.frame_list.winfo_children():
+            w.destroy()
+
+        for u in usuarios:
+            # Формируем текст для кнопки
+            text = f"{u.nombre} ({u.genero}, {u.edad} años)"
+            btn = ctk.CTkButton(
+                self.frame_list,
+                text=text,
+                command=lambda u=u: on_select_callback(u)
+            )
+            btn.pack(fill="x", pady=2, padx=5)
+
+            # Двойной клик для редактирования
+            btn.bind("<Double-1>", lambda e, u=u: on_edit_callback(u))
