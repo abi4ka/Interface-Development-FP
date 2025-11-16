@@ -11,12 +11,13 @@ class AppController:
         self.autosave_running = False
         self.autosave_thread = None
 
-    def add_user(self, name, age, gender, avatar):
+    def add_user(self, name, age, gender, avatar_img, avatar_name):
         new_user = {
             "name": name,
             "age": age,
             "gender": gender,
-            "avatar_img": avatar,
+            "avatar_img": avatar_img,
+            "avatar_name": avatar_name,
             "text": f"{name} ({gender}, {age} años)"
         }
         self.model.add_user(new_user)

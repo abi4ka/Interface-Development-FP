@@ -74,8 +74,12 @@ class AddUserWindow(ctk.CTkToplevel):
         name = self.entry_name.get().strip()
         if not name:
             return
+
         age = int(float(self.scale_age.get()))
         gender = self.gender_var.get()
-        avatar = self.selected_avatar
-        self.controller.add_user(name, age, gender, avatar)
+
+        avatar_img = self.selected_avatar
+        avatar_name = f"avatar{self.selected_avatar_index + 1}.png"
+
+        self.controller.add_user(name, age, gender, avatar_img, avatar_name)
         self.destroy()

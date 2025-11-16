@@ -1,3 +1,7 @@
+import os
+
+AVATAR_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "res")
+
 class UserModel:
     def __init__(self):
         self.users = []
@@ -14,19 +18,32 @@ class UserModel:
                 name = u["name"]
                 age = u["age"]
                 gender = u["gender"]
-                f.write(f"{name},{age},{gender}\n")
+                avatar = u.get("avatar_name", "avatar1.png")
+                f.write(f"{name},{age},{gender},{avatar}\n")
 
     def load_users(self):
+        from PIL import Image
+        import customtkinter as ctk
+
         self.users.clear()
+
         try:
             with open("users.csv", "r", encoding="utf-8") as f:
                 for line in f:
-                    name, age, gender = line.strip().split(",")
+                    name, age, gender, avatar_name = line.strip().split(",")
+
+                    avatar_path = os.path.join(AVATAR_PATH, avatar_name)
+
+                    avatar_img = None
+                    if os.path.exists(avatar_path):
+                        avatar_img = ctk.CTkImage(Image.open(avatar_path), size=(60, 60))
+
                     self.users.append({
                         "name": name,
                         "age": int(age),
                         "gender": gender,
-                        "avatar_img": None,
+                        "avatar_img": avatar_img,
+                        "avatar_name": avatar_name,
                         "text": f"{name} ({gender}, {age} años)"
                     })
         except FileNotFoundError:
