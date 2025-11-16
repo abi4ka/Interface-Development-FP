@@ -60,7 +60,7 @@ class MainView(ctk.CTk):
         self.btn_anadir = ctk.CTkButton(buttons_frame, text="Añadir", width=90, command=self.open_add_window)
         self.btn_anadir.pack(side="left", padx=5)
 
-        self.frame_list = ctk.CTkScrollableFrame(self, label_text="Lista de Usuarios", width=250)
+        self.frame_list = ctk.CTkScrollableFrame(self, label_text="Lista de Usuarios (0)", width=250)
         self.frame_list.grid(row=2, column=0, padx=10, pady=10, sticky="ns")
 
         self.frame_preview = ctk.CTkFrame(self)
@@ -70,13 +70,17 @@ class MainView(ctk.CTk):
         self.label_avatar = ctk.CTkLabel(self.frame_preview, text="")
         self.label_avatar.pack(pady=10)
 
+        self.bottom_panel = ctk.CTkFrame(self, height=40)
+        self.bottom_panel.grid(row=3, column=0, columnspan=2, sticky="ew")
+        self.grid_rowconfigure(3, weight=0)
+
         self.autosave_button = ctk.CTkButton(
-            self,
+            self.bottom_panel,
             text="Auto-guardar: OFF",
             width=140,
             command=self.controller.toggle_autosave
         )
-        self.autosave_button.place(relx=0.01, rely=0.98, anchor="sw")
+        self.autosave_button.pack(side="left", padx=10, pady=5)
 
     def open_add_window(self):
         AddUserWindow(self, self.controller)
@@ -86,10 +90,14 @@ class MainView(ctk.CTk):
         self.destroy()
 
     def update_user_list(self, users):
+        self.frame_list.configure(label_text=f"Lista de Usuarios ({len(users)})")
+
         for widget in self.frame_list.winfo_children():
             widget.destroy()
+
         for user in users:
-            btn = ctk.CTkButton(self.frame_list, text=user["text"], command=lambda u=user: self.controller.select_user(u))
+            btn = ctk.CTkButton(self.frame_list, text=user["text"],
+                                command=lambda u=user: self.controller.select_user(u))
             btn.pack(fill="x", pady=2, padx=5)
 
     def show_preview(self, user):
