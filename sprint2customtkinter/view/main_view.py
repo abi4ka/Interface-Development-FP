@@ -18,8 +18,9 @@ class MainView(ctk.CTk):
 
         menubar = tk.Menu(self)
         menu_archivo = tk.Menu(menubar, tearoff=0)
-        menu_archivo.add_command(label="Guardar Lista", command=lambda: None)
-        menu_archivo.add_command(label="Cargar Lista", command=lambda: None)
+        menu_archivo.add_command(label="Guardar", command=self.controller.guardar_lista)
+        menu_archivo.add_command(label="Cargar", command=self.controller.cargar_lista)
+        menu_archivo.add_command(label="Salir", command=self.controller_exit)
         menubar.add_cascade(label="Archivo", menu=menu_archivo)
         menu_ayuda = tk.Menu(menubar, tearoff=0)
         menu_ayuda.add_command(label="Acerca de", command=lambda: None)
@@ -40,10 +41,15 @@ class MainView(ctk.CTk):
         self.option_genero = ctk.CTkOptionMenu(self.filter_frame, values=["Todos", "Masculino", "Femenino"])
         self.option_genero.grid(row=0, column=3, padx=5, pady=5)
 
-        self.btn_eliminar = ctk.CTkButton(self.filter_frame, text="Eliminar", width=90)
-        self.btn_eliminar.grid(row=0, column=4, padx=(20, 5), pady=5)
-        self.btn_anadir = ctk.CTkButton(self.filter_frame, text="Añadir", width=90, command=self.open_add_window)
-        self.btn_anadir.grid(row=0, column=5, padx=(5, 10), pady=5, sticky="e")
+        self.filter_frame.grid_columnconfigure(4, weight=1)
+        buttons_frame = ctk.CTkFrame(self.filter_frame, fg_color="transparent")
+        buttons_frame.grid(row=0, column=5, padx=(5, 10), pady=5, sticky="e")
+
+        self.btn_eliminar = ctk.CTkButton(buttons_frame, text="Eliminar", width=90)
+        self.btn_eliminar.pack(side="left", padx=5)
+
+        self.btn_anadir = ctk.CTkButton(buttons_frame, text="Añadir", width=90, command=self.open_add_window)
+        self.btn_anadir.pack(side="left", padx=5)
 
         self.frame_list = ctk.CTkScrollableFrame(self, label_text="Lista de Usuarios", width=250)
         self.frame_list.grid(row=2, column=0, padx=10, pady=10, sticky="ns")
@@ -57,6 +63,9 @@ class MainView(ctk.CTk):
 
     def open_add_window(self):
         AddUserWindow(self, self.controller)
+
+    def controller_exit(self):
+        self.destroy()
 
     def update_user_list(self, users):
         for widget in self.frame_list.winfo_children():
