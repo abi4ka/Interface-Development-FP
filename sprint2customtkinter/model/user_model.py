@@ -57,3 +57,18 @@ class UserModel:
 
     def delete_user_by_name(self, name):
         self.users = [u for u in self.users if u.get("name") != name]
+
+    def filter_users(self, text_search, gender):
+        text_search = text_search.lower()
+
+        result = []
+        for u in self.users:
+            if text_search not in u["name"].lower():
+                continue
+
+            if gender != "Todos" and u["gender"] != gender:
+                continue
+
+            result.append(u)
+
+        return result

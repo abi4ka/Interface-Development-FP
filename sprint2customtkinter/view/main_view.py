@@ -37,10 +37,16 @@ class MainView(ctk.CTk):
         self.label_buscar.grid(row=0, column=0, padx=(10, 5), pady=5)
         self.entry_buscar = ctk.CTkEntry(self.filter_frame, width=150)
         self.entry_buscar.grid(row=0, column=1, padx=5, pady=5)
+        self.entry_buscar.bind("<KeyRelease>", lambda e: self.controller.filtrar_usuarios())
 
         self.label_genero = ctk.CTkLabel(self.filter_frame, text="Género:")
         self.label_genero.grid(row=0, column=2, padx=(20, 5), pady=5)
-        self.option_genero = ctk.CTkOptionMenu(self.filter_frame, values=["Todos", "Masculino", "Femenino"])
+
+        self.option_genero = ctk.CTkOptionMenu(
+            self.filter_frame,
+            values=["Todos", "Masculino", "Femenino", "Otro"],
+            command=lambda _: self.controller.filtrar_usuarios()
+        )
         self.option_genero.grid(row=0, column=3, padx=5, pady=5)
 
         self.filter_frame.grid_columnconfigure(4, weight=1)

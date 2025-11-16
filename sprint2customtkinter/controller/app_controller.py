@@ -73,3 +73,15 @@ class AppController:
         self.view.update_user_list(self.model.get_users())
         self.view.clear_preview()
         self.view.set_delete_enabled(False)
+
+    def filtrar_usuarios(self):
+        text = self.view.entry_buscar.get().strip()
+        gender = self.view.option_genero.get()
+
+        filtrados = self.model.filter_users(text, gender)
+        self.view.update_user_list(filtrados)
+
+        self.view.clear_preview()
+        self.view.set_delete_enabled(False)
+
+        self.selected_user = None
