@@ -21,25 +21,6 @@ class Usuario:
         else:
             self.avatar_img = None
 
-    def show_preview(self, usuario):
-        for w in self.frame_preview.winfo_children():
-            w.destroy()
-        self.label_preview = ctk.CTkLabel(self.frame_preview, text="Previsualización",
-                                          font=ctk.CTkFont(size=16, weight="bold"))
-        self.label_preview.pack(pady=10)
-
-        if usuario.avatar_img:
-            label_avatar = ctk.CTkLabel(self.frame_preview, image=usuario.avatar_img, text="")
-        else:
-            label_avatar = ctk.CTkLabel(self.frame_preview, text="Sin avatar")
-        label_avatar.pack(pady=10)
-
-        for label, attr in [("Nombre", "nombre"), ("Edad", "edad"), ("Género", "genero")]:
-            value = getattr(usuario, attr)
-            text = f"{label}: {value}" + (" años" if attr == "edad" else "")
-            ctk.CTkLabel(self.frame_preview, text=text, font=ctk.CTkFont(size=14), anchor="w", justify="left").pack(
-                pady=5, fill="x", padx=10)
-
 class GestorUsuarios:
     def __init__(self):
         self._usuarios = []

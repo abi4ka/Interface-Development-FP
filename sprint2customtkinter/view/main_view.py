@@ -1,6 +1,8 @@
 import tkinter as tk
 import customtkinter as ctk
 
+from model.user_model import Usuario
+
 
 class MainView(ctk.CTkFrame):
     def __init__(self, master, controller):
@@ -135,3 +137,35 @@ class MainView(ctk.CTkFrame):
             btn.pack(fill="x", pady=2, padx=5)
 
             btn.bind("<Double-1>", lambda e, u=u: on_edit_callback(u))
+
+    def show_preview(self, usuario: Usuario):
+        for w in self.frame_preview.winfo_children():
+            w.destroy()
+
+        self.label_preview = ctk.CTkLabel(
+            self.frame_preview,
+            text="Previsualización",
+            font=ctk.CTkFont(size=16, weight="bold")
+        )
+        self.label_preview.pack(pady=10)
+
+        if usuario.avatar_img:
+            label_avatar = ctk.CTkLabel(self.frame_preview, image=usuario.avatar_img, text="")
+        else:
+            label_avatar = ctk.CTkLabel(self.frame_preview, text="Sin avatar")
+        label_avatar.pack(pady=10)
+
+        ctk.CTkLabel(
+            self.frame_preview, text=f"Nombre: {usuario.nombre}",
+            font=ctk.CTkFont(size=14), anchor="w", justify="left"
+        ).pack(pady=5, fill="x", padx=10)
+
+        ctk.CTkLabel(
+            self.frame_preview, text=f"Edad: {usuario.edad} años",
+            font=ctk.CTkFont(size=14), anchor="w", justify="left"
+        ).pack(pady=5, fill="x", padx=10)
+
+        ctk.CTkLabel(
+            self.frame_preview, text=f"Género: {usuario.genero}",
+            font=ctk.CTkFont(size=14), anchor="w", justify="left"
+        ).pack(pady=5, fill="x", padx=10)
