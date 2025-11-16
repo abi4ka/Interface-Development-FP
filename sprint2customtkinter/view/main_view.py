@@ -47,8 +47,9 @@ class MainView(ctk.CTk):
         buttons_frame = ctk.CTkFrame(self.filter_frame, fg_color="transparent")
         buttons_frame.grid(row=0, column=5, padx=(5, 10), pady=5, sticky="e")
 
-        self.btn_eliminar = ctk.CTkButton(buttons_frame, text="Eliminar", width=90)
+        self.btn_eliminar = ctk.CTkButton(buttons_frame, text="Eliminar", width=90, command=self.controller.delete_user)
         self.btn_eliminar.pack(side="left", padx=5)
+        self.set_delete_enabled(False)
 
         self.btn_anadir = ctk.CTkButton(buttons_frame, text="Añadir", width=90, command=self.open_add_window)
         self.btn_anadir.pack(side="left", padx=5)
@@ -115,3 +116,18 @@ class MainView(ctk.CTk):
 
     def show_message(self, text):
         print(text)
+
+    def set_delete_enabled(self, enabled: bool):
+        if enabled:
+            self.btn_eliminar.configure(state="normal")
+        else:
+            self.btn_eliminar.configure(state="disabled")
+
+    def clear_preview(self):
+        for widget in self.frame_preview.winfo_children():
+            widget.destroy()
+        self.label_preview = ctk.CTkLabel(self.frame_preview, text="Previsualización",
+                                          font=ctk.CTkFont(size=16, weight="bold"))
+        self.label_preview.pack(pady=10)
+        self.label_avatar = ctk.CTkLabel(self.frame_preview, text="")
+        self.label_avatar.pack(pady=10)

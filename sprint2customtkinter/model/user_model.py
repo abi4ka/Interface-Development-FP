@@ -48,3 +48,12 @@ class UserModel:
                     })
         except FileNotFoundError:
             pass
+
+    def delete_user_by_index(self, index):
+        try:
+            del self.users[index]
+        except IndexError:
+            pass
+
+    def delete_user_by_name(self, name):
+        self.users = [u for u in self.users if u.get("name") != name]

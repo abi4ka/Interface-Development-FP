@@ -5,6 +5,7 @@ import time
 
 class AppController:
     def __init__(self):
+        self.selected_index = None
         self.model = UserModel()
         self.view = MainView(self)
         self.view.update_user_list(self.model.get_users())
@@ -24,7 +25,13 @@ class AppController:
         self.view.update_user_list(self.model.get_users())
 
     def select_user(self, user):
+        try:
+            self.selected_index = self.model.get_users().index(user)
+        except ValueError:
+            self.selected_index = None
+        self.selected_user = user
         self.view.show_preview(user)
+        self.view.set_delete_enabled(self.selected_index is not None)
 
     def guardar_lista(self):
         self.model.save_users()
@@ -56,3 +63,13 @@ class AppController:
 
     def stop_autosave(self):
         self.autosave_running = False
+
+    def delete_user(self):
+        if self.selected_index is None:
+            return
+        self.model.delete_user_by_index(self.selected_index)
+        self.selected_index = None
+        self.selected_user = None
+        self.view.update_user_list(self.model.get_users())
+        self.view.clear_preview()
+        self.view.set_delete_enabled(False)
